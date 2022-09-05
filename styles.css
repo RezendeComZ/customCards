@@ -1,0 +1,57 @@
+body {
+  background-color:rgb(124, 179, 201);
+}
+
+#base {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.card {
+  position: relative;
+  height: 400px;
+  width: 280px;
+  border-color: azure;
+  border-radius: 30px;
+  border-width: 5px;
+  border-style: solid;
+  text-align: center;
+}
+
+
+#face-down-card {
+  background-color: rgb(139, 150, 124);
+  z-index: 10;
+  /* animation-name: going-out; */
+  /* animation-duration: 2s;
+  animation-play-state: paused; */
+
+}
+
+#face-up-card  {
+  background-color: rgb(124, 150, 150);
+  animation-name: going-out;
+  animation-duration: 2s;
+  animation-play-state: paused;
+  z-index: 12;
+}
+
+@keyframes going-out {
+  0% {
+    transform: rotate(0deg) scale(1);;
+    top: 0%;
+    left: 0%;
+  }
+  100% {
+    transform: rotate(60deg) scale(1.8);
+    top: 80%;
+    left: 370%;
+  }
+}
+
+.main-card p {
+  display: inline-block;
+  vertical-align: middle;
+}
