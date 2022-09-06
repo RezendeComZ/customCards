@@ -3,14 +3,14 @@ body {
 }
 
 #base {
+  display: inline-block;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 40%;
+  top: 25%;
 }
 
 .card {
-  position: relative;
+  position: absolute;
   height: 400px;
   width: 280px;
   border-color: azure;
@@ -23,17 +23,12 @@ body {
 
 #face-down-card {
   background-color: rgb(139, 150, 124);
-  z-index: 10;
-  /* animation-name: going-out; */
-  /* animation-duration: 2s;
-  animation-play-state: paused; */
-
+  z-index: -10;
 }
 
 #face-up-card  {
   background-color: rgb(124, 150, 150);
-  animation-name: going-out;
-  animation-duration: 2s;
+  animation: going-out 2s infinite;
   animation-play-state: paused;
   z-index: 12;
 }
@@ -46,8 +41,8 @@ body {
   }
   100% {
     transform: rotate(60deg) scale(1.8);
-    top: 80%;
-    left: 370%;
+    top: 620px;
+    left: 620px;
   }
 }
 
