@@ -1,5 +1,6 @@
 body {
   background-color:rgb(124, 179, 201);
+  overflow: hidden; /* Hide scrollbars */
 }
 
 #base {
@@ -20,7 +21,6 @@ body {
   text-align: center;
 }
 
-
 #face-down-card {
   background-color: rgb(139, 150, 124);
   z-index: -10;
@@ -28,8 +28,6 @@ body {
 
 #face-up-card  {
   background-color: rgb(124, 150, 150);
-  animation: going-out 2s infinite;
-  animation-play-state: paused;
   z-index: 12;
 }
 
