@@ -1,3 +1,4 @@
+CONFIG: TEST
 Say three words with A
 Say three words with B
 Say three words with C
