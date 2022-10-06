@@ -1,7 +1,6 @@
 const random = size => Math.floor(Math.random() * size)
 
 let lines = []
-
 let cardsPhrases = []
 
 const cardGoingOut = () => {
@@ -18,73 +17,78 @@ const faceDownCard = document.querySelector("#face-down-card")
 const faceUpCardText = document.querySelector("#face-up-card-text")
 const faceDownCardText = document.querySelector("#face-down-card-text")
 
-const pickAndRemove = phrases => {
-  loadedPhrases = phrases
+const randomizeOrder = phrases => {
+  let loadedPhrases = phrases
+  let newOrder = []
   for (let i = loadedPhrases.length; i == loadedPhrases.length; i--) {
     item = random(loadedPhrases.length)
-    cardsPhrases.push(loadedPhrases[item])
+    newOrder.push(loadedPhrases[item])
     loadedPhrases.splice(item, 1)
   }
+  newOrder.pop() // There must be a better solution than that!
+  return newOrder
 }
   
 const getConfigs = lines => {
   firstLine = lines[0]
   if (firstLine.startsWith("CONFIG:")) {
     configs = firstLine.split(" ").slice(1)
-    console.log(configs);
 
     return configs
   }
 }
 
+const groupsIndexes = lines => {
+  indexes = [] // First phrase by group
+
+  // Puting name and start index:
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].startsWith("GROUP:")) {
+      groupObj = {name: lines[i].split("GROUP:")[1],
+                  start: i + 1}
+      indexes.push(groupObj)
+    }
+  }
+
+  // Puting size:
+  indexes.forEach((group, index) => {
+    if (!indexes[index + 1]) { // last
+      indexes[index] = {
+        ...group,
+        size: - (group.start - lines.length)
+      }
+    } else {
+      indexes[index] = {
+        ...group,
+        size: Math.abs(group.start - indexes[index + 1].start) - 1
+      }
+    }
+  }
+  );
+
+  return indexes
+}
+
 const splitByGroups = lines => {
-  // colocar alguma coisa para quebrar em arrays quando encontrar uma line === "GROUP:"
-  // Daria para fazer um array com tipo indexOf (só que de todos), colocar esses indexes em array, em em seguida, pegar esses e fazer um map, que retorna  o inicio e o fim desses grupos, pode ser em cima desse array com indexes
+  let groupsIndexesObj = groupsIndexes(lines)
+  let arrayOfPharasesByGroup = groupsIndexesObj.map(group => {
+    let linesCopy = lines.slice(0)
+    return linesCopy.splice(group.start, group.size)})
+  let randomPhrasesByGroup = arrayOfPharasesByGroup.map(groupPhrases => randomizeOrder(groupPhrases)) 
 
-  /* 
-  Ex: ["GROUP: Fácil", "pergunta fácil", "pergunta facil2", "GROUP: Difícil", "pergunta dificil", "GROUP: Muito difícil", "aaaa"]
-
-  Quando tiver startsWith("GROUP: ") armazenar index (que é onde começa), então:
-  indexes = [0, 3, 5] // esses sao os indexs dos grupos
-
-  While indexes.length > 0:
-  Pra pegar as frases é fazer um lines.slice(indexes[0] + 1, indexes[1] - 1) pra pegar o primeiro grupo. E jogamos para outro novo array esse grupo em forma de obj: [{group: "Fácil", phrases: ["pergunta fácil", "pergunta facil2"]}]
-  No segundo, removemos o primeiro item então:
-  indexes = [3 , 5]
-  Repete o procedimento pra pegar o segundo grupo: lines.slice(indexes[0] + 1, indexes[1] - 1)
-  ficamos com:
-  indexes = [5]
-  Se indexes.length = 0: // ou seja, ultimo grupo
-  lines.slice(5)
-  
-  mandamos para um array que ficará assim no final:
-
-  [{group: "Fácil", phrases: ["pergunta fácil", "pergunta facil2"]},
-   {group: "Dificil", phrases: ["pergunta dificil"]},
-   {group: "Muito difícil", phrases: ["aaaa"]},
-  ]
-
-  map com operacoes tipo random/uppercase/etc
-  , mas deixando ainda o nome do grupo, podemos precisar usar para inserir nas cartas
-  */
-  return lines
+  return randomPhrasesByGroup.flat().reverse()
 }
 
 const getPhrasesByGroup = lines => {
-
-  if (getConfigs(lines)) { // Remove configs from  here
-    console.log("tem config");
-    return splitByGroups(lines.slice(1))
+  if (getConfigs(lines)) {
+    return splitByGroups(lines.slice(1)) // Remove configs
   } else {
-    console.log(" nao tem config");
-    return splitByGroups(lines)
+    return splitByGroups(lines) // no config
   }
 }
 
-
 const loadCards = () => {
-  sortedPhrases = getPhrasesByGroup(lines)
-  pickAndRemove(sortedPhrases)
+  cardsPhrases = getPhrasesByGroup(lines)
   cardsPhrases = cardsPhrases.slice(0, cardsPhrases.length - 1)
   
   faceUpCardText.textContent = cardsPhrases.pop()
