@@ -9,8 +9,8 @@ const cardGoingOut = () => {
   setTimeout(() => {
     faceUpCardText.textContent = faceDownCardText.textContent
     faceDownCardText.textContent = cardsPhrases.pop() || faceDownCard.remove();
-    faceUpCard.style.animationName = "" 
-    }, 1800)
+    faceUpCard.style.animationName = ""
+  }, 1800)
 }
 const faceUpCard = document.querySelector("#face-up-card")
 const faceDownCard = document.querySelector("#face-down-card")
@@ -28,7 +28,7 @@ const randomizeOrder = phrases => {
   newOrder.pop() // There must be a better solution than that!
   return newOrder
 }
-  
+
 const getConfigs = lines => {
   firstLine = lines[0]
   if (firstLine.startsWith("CONFIG:")) {
@@ -39,32 +39,34 @@ const getConfigs = lines => {
 }
 
 const groupsIndexes = lines => {
-  indexes = [] // First phrase by group
+  indexes = [] // Group and first question
 
   // Puting name and start index:
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("GROUP:")) {
-      groupObj = {name: lines[i].split("GROUP:")[1],
-                  start: i + 1}
+      groupObj = {
+        name: lines[i].split("GROUP:")[1],
+        start: i + 1
+      }
       indexes.push(groupObj)
     }
   }
 
   // Puting size:
   indexes.forEach((group, index) => {
-    if (!indexes[index + 1]) { // last
-      indexes[index] = {
-        ...group,
-        size: - (group.start - lines.length)
-      }
-    } else {
+    if (indexes[index + 1]) {
       indexes[index] = {
         ...group,
         size: Math.abs(group.start - indexes[index + 1].start) - 1
       }
+    } else { // last
+      indexes[index] = {
+        ...group,
+        size: - (group.start - lines.length)
+      }
+      
     }
-  }
-  );
+  });
 
   return indexes
 }
@@ -72,9 +74,12 @@ const groupsIndexes = lines => {
 const splitByGroups = lines => {
   let groupsIndexesObj = groupsIndexes(lines)
   let arrayOfPharasesByGroup = groupsIndexesObj.map(group => {
-    let linesCopy = lines.slice(0)
-    return linesCopy.splice(group.start, group.size)})
-  let randomPhrasesByGroup = arrayOfPharasesByGroup.map(groupPhrases => randomizeOrder(groupPhrases)) 
+    groupName = lines[0]
+    linesCopy = lines.slice(0)
+    return linesCopy.splice(group.start, group.size)
+  })
+
+  let randomPhrasesByGroup = arrayOfPharasesByGroup.map(groupPhrases => randomizeOrder(groupPhrases))
 
   return randomPhrasesByGroup.flat().reverse()
 }
@@ -90,15 +95,16 @@ const getPhrasesByGroup = lines => {
 const loadCards = () => {
   cardsPhrases = getPhrasesByGroup(lines)
   cardsPhrases = cardsPhrases.slice(0, cardsPhrases.length - 1)
-  
+
   faceUpCardText.textContent = cardsPhrases.pop()
   faceDownCardText.textContent = cardsPhrases.pop()
-  
+
   faceUpCard.addEventListener("click", cardGoingOut)
 }
 
-const file = fetch('phrases.txt')
-.then(response => response.text())
-.then(text => {
-  lines = text.split("\n")
-  loadCards()})
+fetch('questions.txt')
+  .then(response => response.text())
+  .then(text => {
+    lines = text.split("\n")
+    loadCards()
+  })

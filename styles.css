@@ -34,13 +34,13 @@ h3 {
 
 @keyframes going-out {
   0% {
-    transform: rotate(0deg) scale(1);;
+    transform: rotate(0deg) scale(1) skew(0);
     top: 0%;
     left: 0%;
   }
   100% {
-    transform: rotate(60deg) scale(1.8);
+    transform: rotate(60deg) scale(1.8) skew(0) skew(0deg, 45deg);
     top: 620px;
-    left: 620px;
+    left: 820px;
   }
 }
