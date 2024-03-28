@@ -2,13 +2,19 @@ const random = size => Math.floor(Math.random() * size)
 
 let lines = []
 let cardsPhrases = []
+const footerText = document.querySelector("#group-name")
 
 const cardGoingOut = () => {
+  footerText.textContent = cardsPhrases[0].groupName
+
+  if (cardsPhrases[0].questions.length < 1) {
+    cardsPhrases.shift()
+  }
   faceUpCard.style.animationDuration = "2s"
   faceUpCard.style.animationName = "going-out"
   setTimeout(() => {
     faceUpCardText.textContent = faceDownCardText.textContent
-    faceDownCardText.textContent = cardsPhrases.pop() || faceDownCard.remove();
+    faceDownCardText.textContent = cardsPhrases[0].questions.pop() || faceDownCard.remove();
     faceUpCard.style.animationName = ""
   }, 1800)
 }
@@ -29,12 +35,12 @@ const randomizeOrder = phrases => {
   return newOrder
 }
 
-const getConfigs = lines => {
+const getSettings = lines => {
   firstLine = lines[0]
-  if (firstLine.startsWith("CONFIG:")) {
-    configs = firstLine.split(" ").slice(1)
+  if (firstLine.startsWith("SETTINGS:")) {
+    settings = firstLine.split(" ").slice(1)
 
-    return configs
+    return settings
   }
 }
 
@@ -45,14 +51,14 @@ const groupsIndexes = lines => {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("GROUP:")) {
       groupObj = {
-        name: lines[i].split("GROUP:")[1],
+        groupName: lines[i].split("GROUP:")[1].slice(1, -1),
         start: i + 1
       }
       indexes.push(groupObj)
     }
   }
 
-  // Puting size:
+  // Group size:
   indexes.forEach((group, index) => {
     if (indexes[index + 1]) {
       indexes[index] = {
@@ -64,7 +70,6 @@ const groupsIndexes = lines => {
         ...group,
         size: - (group.start - lines.length)
       }
-      
     }
   });
 
@@ -72,23 +77,28 @@ const groupsIndexes = lines => {
 }
 
 const splitByGroups = lines => {
-  let groupsIndexesObj = groupsIndexes(lines)
-  let arrayOfPharasesByGroup = groupsIndexesObj.map(group => {
-    groupName = lines[0]
+  groupsIndexesObj = groupsIndexes(lines)
+  arrayOfPharasesByGroup = groupsIndexesObj.map(group => {
     linesCopy = lines.slice(0)
-    return linesCopy.splice(group.start, group.size)
+    return {
+      ...group,
+      questions: linesCopy.splice(group.start, group.size),
+    }
   })
 
-  let randomPhrasesByGroup = arrayOfPharasesByGroup.map(groupPhrases => randomizeOrder(groupPhrases))
-
-  return randomPhrasesByGroup.flat().reverse()
+  return arrayOfPharasesByGroup.map(groupPhrases => {
+    return {
+      questions: randomizeOrder(groupPhrases.questions),
+      groupName: groupPhrases.groupName
+    }
+  })
 }
 
 const getPhrasesByGroup = lines => {
-  if (getConfigs(lines)) {
-    return splitByGroups(lines.slice(1)) // Remove configs
+  if (getSettings(lines)) {
+    return splitByGroups(lines.slice(1)) // Remove settings when it exist
   } else {
-    return splitByGroups(lines) // no config
+    return splitByGroups(lines)
   }
 }
 
@@ -96,8 +106,11 @@ const loadCards = () => {
   cardsPhrases = getPhrasesByGroup(lines)
   cardsPhrases = cardsPhrases.slice(0, cardsPhrases.length - 1)
 
-  faceUpCardText.textContent = cardsPhrases.pop()
-  faceDownCardText.textContent = cardsPhrases.pop()
+  // TODO: What happens if it is empty? Or just one?
+  // First two questions:
+  faceUpCardText.textContent = cardsPhrases[0].questions.pop()
+  faceDownCardText.textContent = cardsPhrases[0].questions.pop()
+  footerText.textContent = cardsPhrases[0].groupName
 
   faceUpCard.addEventListener("click", cardGoingOut)
 }

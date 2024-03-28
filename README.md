@@ -8,8 +8,8 @@ Avaliable for tests [here](https://rezendecomz.github.io/customCards/).
 # TODOs (?)
 
 - Fix final card animation
-- Allow configs on file (e.g: CONFIG: ordered cardColor(150, 150, 150), borderColor(white) bgColor(150, 150, 100), textColor(200, 200, 200) ORIGINALCASE LOOP NOGROUPNAME)
-- Show group name at bottom (not show using config NOGROUPNAME)
+- Allow settings on file (e.g: SETTINGS: ordered cardColor(150, 150, 150), borderColor(white) bgColor(150, 150, 100), textColor(200, 200, 200) ORIGINALCASE LOOP NOGROUPNAME)
+- Do not display group name when using NOGROUPNAME setting
 - Card opacity animation at start
 - Better CSS for desktop and mobile
 - Upload custom file with questions

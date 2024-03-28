@@ -1,5 +1,5 @@
 body {
-  background-color:rgb(124, 179, 201);
+  background-color:rgb(124, 187, 201); /* start */
   overflow: hidden; /* Hide scrollbars */
 }
 
@@ -43,4 +43,14 @@ h3 {
     top: 620px;
     left: 820px;
   }
+}
+
+footer {
+  text-shadow: 0 0 8px #000000;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  opacity: 0.8;
 }
