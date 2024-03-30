@@ -1,22 +1,44 @@
+document.body.style.background = "hsl(190, 100%, 50%)"
+
 const random = size => Math.floor(Math.random() * size)
 
 let lines = []
 let cardsPhrases = []
+let groupsRemaning = 0
+let numberOfGroups = 0
+let lastGroupName = ""
 const footerText = document.querySelector("#group-name")
 
-const cardGoingOut = () => {
-  footerText.textContent = cardsPhrases[0].groupName
+const changeBackground = () => {
+  colorIncrease = 165 / (groupsRemaning - 1)
+  hue = 190 + colorIncrease
+  document.body.style.background = "hsl(" + hue + ", 100%, 50%)"
 
-  if (cardsPhrases[0].questions.length < 1) {
-    cardsPhrases.shift()
+  groupsRemaning--
+}
+
+const cardGoingOut = () => {
+  currentGroupName = cardsPhrases[0].groupName
+  footerText.textContent = currentGroupName
+
+  if (lastGroupName !== currentGroupName) {
+    changeBackground()
   }
+
   faceUpCard.style.animationDuration = "2s"
   faceUpCard.style.animationName = "going-out"
   setTimeout(() => {
     faceUpCardText.textContent = faceDownCardText.textContent
     faceDownCardText.textContent = cardsPhrases[0].questions.pop() || faceDownCard.remove();
     faceUpCard.style.animationName = ""
-  }, 1800)
+  }, 500)
+  
+  if (cardsPhrases[0].questions.length < 1) {{
+    cardsPhrases.shift()
+  }}
+
+
+  lastGroupName = currentGroupName
 }
 const faceUpCard = document.querySelector("#face-up-card")
 const faceDownCard = document.querySelector("#face-down-card")
@@ -31,7 +53,7 @@ const randomizeOrder = phrases => {
     newOrder.push(loadedPhrases[item])
     loadedPhrases.splice(item, 1)
   }
-  newOrder.pop() // There must be a better solution than that!
+  newOrder.pop()
   return newOrder
 }
 
@@ -104,7 +126,9 @@ const getPhrasesByGroup = lines => {
 
 const loadCards = () => {
   cardsPhrases = getPhrasesByGroup(lines)
-  cardsPhrases = cardsPhrases.slice(0, cardsPhrases.length - 1)
+  groupsRemaning = cardsPhrases.length
+  numberOfGroups = groupsRemaning
+  lastGroupName = cardsPhrases[0].groupName
 
   // TODO: What happens if it is empty? Or just one?
   // First two questions:
