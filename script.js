@@ -73,7 +73,7 @@ const groupsIndexes = lines => {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("GROUP:")) {
       groupObj = {
-        groupName: lines[i].split("GROUP:")[1].slice(1, -1),
+        groupName: lines[i].split("GROUP:")[1],
         start: i + 1
       }
       indexes.push(groupObj)
