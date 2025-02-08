@@ -39,8 +39,8 @@ h3 {
   }
   100% {
     transform: rotate(60deg) scale(1.8) skew(0) skew(0deg, 45deg);
-    top: 620px;
-    left: 820px;
+    top: 1620px;
+    left: 1820px;
   }
 }
 
